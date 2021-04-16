@@ -1,5 +1,14 @@
 pipeline {
     agent any
+    parameters {
+        string(name: 'tomcat_dev', defaultvalue: '3.141.170.47', description 'Staging Server')
+        string(name: 'tomcat_prod', defaultvalue: '18.224.252.30', description 'Production Server')
+    }
+    
+    triggers {
+        pollSCM('* * * * *')
+    }
+    
     stages{
         stage('Build'){
             steps {
@@ -12,31 +21,20 @@ pipeline {
                 }
             }
         }
-        stage ('Deploy to Staging'){
-            steps {
-                build job: 'Deploy-to-staging'
-            }
-        }
-
-        stage ('Deploy to Production'){
-            steps{
-                timeout(time:5, unit:'DAYS'){
-                    input message:'Approve PRODUCTION Deployment?'
+        stage('Deploymens'){
+            parallel{
+                stage('Deploy to Staging'){
+                    steps {
+                        sh "scp -i /home/student/Downloads/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_dev}:/opt/tomcat8/webapps"
+                    }
                 }
-
-                build job: 'Deploy-to-Prod'
-            }
-            post {
-                success {
-                    echo 'Code deployed to Production.'
-                }
-
-                failure {
-                    echo ' Deployment failed.'
+                stage('Deploy to Production'){
+                    steps {
+                        sh "scp -i /home/student/Downloads/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_prod}:/opt/tomcat8/webapps"
+                
+                    }
                 }
             }
-        }
-
-
+        }                            
     }
 }
