@@ -27,13 +27,13 @@ stages{
             parallel{
                 stage ('Deploy to Staging'){
                     steps {
-                        sh "cp -i  **/target/*.war student@${params.tomcat_dev}:/var/lib/tomcat9/webapps"
+                        sh "scp **/target/*.war student@${params.tomcat_dev}:/var/lib/tomcat9/webapps"
                     }
                 }
 
                 stage ("Deploy to Production"){
                     steps {
-                        sh "cp -i  **/target/*.war student@${params.tomcat_prod}:/var/lib/tomcat9/webapps"
+                        sh "scp **/target/*.war student@${params.tomcat_prod}:/var/lib/tomcat9/webapps"
                     }
                 }
             }
