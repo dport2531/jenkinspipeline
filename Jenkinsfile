@@ -2,8 +2,8 @@ pipeline {
     agent any
     
     parameters { 
-         string(name: 'tomcat_dev', defaultValue: '3.141.170.47', description: 'Staging Server')
-         string(name: 'tomcat_prod', defaultValue: '3.142.244.46', description: 'Production Server')
+         string(name: 'tomcat_dev', defaultValue: '192.168.1.197', description: 'Staging Server')
+         string(name: 'tomcat_prod', defaultValue: '192.168.1.104', description: 'Production Server')
     } 
 
     triggers {
@@ -27,13 +27,13 @@ stages{
             parallel{
                 stage ('Deploy to Staging'){
                     steps {
-                        sh "scp -i /home/student/Downloads/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_dev}:/opt/tomcat8/webapps"
+                        sh "scp -i  **/target/*.war student${params.tomcat_dev}:/var/lib/tomcat9/webapps"
                     }
                 }
 
                 stage ("Deploy to Production"){
                     steps {
-                        sh "scp -i /home/student/Downloads/tomcat-demo.pem **/target/*.war ec2-user@${params.tomcat_prod}:/opt/tomcat8/webapps"
+                        sh "scp -i  **/target/*.war student@${params.tomcat_prod}:/var/lib/tomcat9/webapps"
                     }
                 }
             }
